@@ -103,6 +103,8 @@
 
         [monthView setMonthIndex:monthIndex];
     }
+    
+    [self.calendarManager.dataSource calendarDidChangeMonth:self.calendarManager date:currentDate];
 }
 
 #pragma mark - JTCalendarManager
