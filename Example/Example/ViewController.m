@@ -65,6 +65,11 @@
     NSLog(@"Date: %@", date);
 }
 
+- (void)calendarDidChangeMonth:(JTCalendar *)calendar date:(NSDate *)date
+{
+    NSLog(@"Date: %@", date);
+}
+
 #pragma mark - Transition examples
 
 - (void)transitionExample
