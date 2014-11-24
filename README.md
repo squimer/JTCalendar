@@ -1,4 +1,4 @@
-JTCalendar
+A fork from JTCalendar
 ==========
 
 ![Version](https://img.shields.io/cocoapods/v/JTCalendar.svg)
@@ -6,6 +6,11 @@ JTCalendar
 ![Platform](https://img.shields.io/cocoapods/p/JTCalendar.svg)
 
 JTCalendar is a calendar control for iOS easily customizable.
+
+## What's new?
+
+- monthDidChange method added to delegate.
+- Swift examples.
 
 ## Installation
 
@@ -17,10 +22,22 @@ With [CocoaPods](http://cocoapods.org/), add this line to your Podfile.
 ## Screenshots
 
 ![Month](./Screens/month.png "Month View")
-![Week](./Screens/week.png "Week View")
-![Example](./Screens/example.png "Example View")
 
 ## Usage
+
+### Swift Warning
+
+If you're using swift, you'll need a bridging header file (You can create one following this [tutorial](https://developer.apple.com/library/ios/documentation/swift/conceptual/buildingcocoaapps/MixandMatch.html)).
+
+Once you have a YouAppName-Bridging-Header.h file, add the following lines:
+
+```objective-c
+#import "JTCalendar.h"
+#import "JTCalendarMenuView.h"
+#import "JTCalendarContentView.h"
+```
+
+And you ready to go.
 
 ### Basic usage
 
@@ -32,6 +49,7 @@ The second view is `JTCalendarContentView`, the calendar itself.
 
 Your UIViewController must implement `JTCalendarDataSource`
 
+#### Objective-C
 ```objective-c
 #import <UIKit/UIKit.h>
 
@@ -80,29 +98,67 @@ Your UIViewController must implement `JTCalendarDataSource`
     NSLog(@"%@", date);
 }
 
+- (void)calendarDidChangeMonth:(JTCalendar *)calendar date:(NSDate *)date
+{
+    NSLog(@"Date: %@", date);
+}
+
 @end
 
 ```
 
-### Switch to week view
+#### Swift
 
-If you want see just one week at time you can switch when you want between the weekMode.
+`JTCalendar` is used to coordinate `calendarMenuView` and `calendarContentView`.
 
-```objective-c
-self.calendar.calendarAppearance.isWeekMode = YES;
-[self.calendar reloadAppearance];
+```swift
+import UIKit
+
+class ViewController: UIViewController, JTCalendarDataSource {
+    
+    @IBOutlet weak var calendarMenuView: JTCalendarMenuView!
+    @IBOutlet weak var calendarContentView: JTCalendarContentView!
+    
+    var calendar: JTCalendar!
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        self.calendar = JTCalendar()
+        
+        self.calendar.menuMonthsView = calendarMenuView
+        self.calendar.contentView = calendarContentView
+        self.calendar.dataSource = self
+    }
+
+    
+    override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        self.calendar.reloadData()
+    }
+    
+    func calendarHaveEvent(calendar: JTCalendar!, date: NSDate!) -> Bool {
+        return true
+    }
+    
+    func calendarDidDateSelected(calendar: JTCalendar!, date: NSDate!) {
+        println(date)
+    }
+    
+    func calendarDidChangeMonth(calendar: JTCalendar!, date: NSDate!) {
+        println(date)
+    }
+    
+}
 ```
-
-#### WARNING
-
-When you change the mode, it doesn't change the height of `calendarContentView`, you have to do it yourself.
-See the project in example for more details.
 
 ### Customize the design
 
 You have a lot of options available for personnalize the design.
 Check the `JTCalendarAppearance.h` file for see all options.
 
+##### Objective-c:
 ```objective-c
 self.calendar.calendarAppearance.calendar.firstWeekday = 2; // Monday
 self.calendar.calendarAppearance.ratioContentMenu = 1.;
@@ -112,66 +168,33 @@ self.calendar.calendarAppearance.dayTextColorSelected = [UIColor whiteColor];
 [self.calendar reloadAppearance];
 ```
 
+##### Swift:
+```swift
+self.calendar.calendarAppearance.calendar().firstWeekday = 2
+self.calendar.calendarAppearance.ratioContentMenu = 1
+self.calendar.calendarAppearance.menuMonthTextColor = UIColor.whiteColor()
+self.calendar.calendarAppearance.dayCircleColorSelected = UIColor.blueColor()
+self.calendar.calendarAppearance.dayTextColorSelected = UIColor.whiteColor()
+self.calendar.reloadAppearance()
+```
+
 #### Recommendation
 
-The call to `reloadAppearance` is expensive, `reloadAppearance` is call by `setMenuMonthsView` and `setContentView`.
+You may want to open your calendar on a specific date.
 
-For better performance define the appearance just after instanciate `JTCalendar`.
-
-BAD example:
-```objective-c
-self.calendar = [JTCalendar new];
-    
-[self.calendar setMenuMonthsView:self.calendarMenuView];
-[self.calendar setContentView:self.calendarContentView];
-[self.calendar setDataSource:self];
-
-self.calendar.calendarAppearance.calendar.firstWeekday = 2; // Monday
-self.calendar.calendarAppearance.ratioContentMenu = 1.;
-self.calendar.calendarAppearance.menuMonthTextColor = [UIColor whiteColor];
-self.calendar.calendarAppearance.dayCircleColorSelected = [UIColor blueColor];
-self.calendar.calendarAppearance.dayTextColorSelected = [UIColor whiteColor];
-
-[self.calendar reloadAppearance]; // You have to call reloadAppearance
-```
-
-GOOD example:
-```objective-c
-self.calendar = [JTCalendar new];
-
-self.calendar.calendarAppearance.calendar.firstWeekday = 2; // Monday
-self.calendar.calendarAppearance.ratioContentMenu = 1.;
-self.calendar.calendarAppearance.menuMonthTextColor = [UIColor whiteColor];
-self.calendar.calendarAppearance.dayCircleColorSelected = [UIColor blueColor];
-self.calendar.calendarAppearance.dayTextColorSelected = [UIColor whiteColor];
-
-[self.calendar setMenuMonthsView:self.calendarMenuView];
-[self.calendar setContentView:self.calendarContentView];
-[self.calendar setDataSource:self];
-
-// You don't have to call reloadAppearance
-```
-
-You may also want to open your calendar on a specific date, by defaut it's `[NSDate date].`
+##### Objective-c:
 ```objective-c
 [self.calendar setCurrentDate:myDate];
 ```
 
-### Data cache
-
-By default a cache is activated for don't have to call `calendarHaveEvent` intensively. For clean the cache you just have to call `reloadData`.
-
-If you don't want to use this cache you can disable it with:
-```objective-c
-self.calendar.calendarAppearance.useCacheSystem = NO;
+##### Swift:
+```swift
+self.calendar.currentDate = myDate
 ```
 
-## Requirements
 
-- iOS 7 or higher
-- Automatic Reference Counting (ARC)
 
-## Author
+## Original Author
 
 - [Jonathan Tribouharet](https://github.com/jonathantribouharet) ([@johntribouharet](https://twitter.com/johntribouharet))
 
