@@ -1,23 +1,12 @@
 A fork from JTCalendar
 ==========
 
-![Version](https://img.shields.io/cocoapods/v/JTCalendar.svg)
-![License](https://img.shields.io/cocoapods/l/JTCalendar.svg)
-![Platform](https://img.shields.io/cocoapods/p/JTCalendar.svg)
-
 JTCalendar is a calendar control for iOS easily customizable.
 
 ## What's new?
 
 - monthDidChange method added to delegate.
 - Swift examples.
-
-## Installation
-
-With [CocoaPods](http://cocoapods.org/), add this line to your Podfile.
-
-    pod 'JTCalendar', '~> 1.1'
-
 
 ## Screenshots
 
