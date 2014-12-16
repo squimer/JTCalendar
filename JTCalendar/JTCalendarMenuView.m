@@ -93,15 +93,16 @@
     self->_currentDate = currentDate;
  
     NSCalendar *calendar = self.calendarManager.calendarAppearance.calendar;
-    NSDateComponents *comps = [calendar components:NSCalendarUnitMonth fromDate:currentDate];
+    NSDateComponents *comps = [calendar components:NSCalendarUnitMonth | NSCalendarUnitYear fromDate:currentDate];
     NSInteger currentMonthIndex = comps.month;
+    NSInteger currentYear = comps.year;
     
     for(int i = 0; i < NUMBER_PAGES_LOADED; ++i){
         JTCalendarMenuMonthView *monthView = monthsViews[i];
         NSInteger monthIndex = currentMonthIndex - (NUMBER_PAGES_LOADED / 2) + i;
         monthIndex = monthIndex % 12;
 
-        [monthView setMonthIndex:monthIndex];
+        [monthView setMonthIndex:monthIndex withYear:currentYear];
     }
     
     [self.calendarManager.dataSource calendarDidChangeMonth:self.calendarManager date:currentDate];

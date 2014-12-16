@@ -49,19 +49,20 @@
     }
 }
 
-- (void)setMonthIndex:(NSInteger)monthIndex
+- (void)setMonthIndex:(NSInteger)monthIndex withYear:(NSInteger) year
 {
     static NSDateFormatter *dateFormatter;
     if(!dateFormatter){
         dateFormatter = [NSDateFormatter new];
         dateFormatter.timeZone = self.calendarManager.calendarAppearance.calendar.timeZone;
     }
-
+    
     while(monthIndex <= 0){
         monthIndex += 12;
     }
     
-    textLabel.text = [[dateFormatter standaloneMonthSymbols][monthIndex - 1] capitalizedString];
+    NSString *month = [[dateFormatter standaloneMonthSymbols][monthIndex - 1] capitalizedString];
+    textLabel.text = [NSString stringWithFormat:@"%@ - %ld", month, (long)year];
 }
 
 - (void)layoutSubviews
